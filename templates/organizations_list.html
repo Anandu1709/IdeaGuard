@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Organizations - IdeaGuard{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto bg-white p-10 rounded-lg shadow-lg border border-gray-100">
+    <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Registered Organizations</h2>
+
+    {% if organizations %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for org in organizations %}
+        <div class="card p-6 flex flex-col items-center text-center">
+            {% if org.logo_url %}
+            <img src="{{ org.logo_url }}" alt="{{ org.name }} Logo" class="mb-4 h-20 w-auto object-contain rounded-lg shadow-sm">
+            {% else %}
+            <div class="mb-4 h-20 w-20 flex items-center justify-center bg-gray-100 text-gray-500 text-3xl font-bold rounded-lg shadow-sm">
+                {{ org.name[0] | upper }}
+            </div>
+            {% endif %}
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ org.name }}</h3>
+            {% if org.contact_person %}
+            <p class="text-gray-600 text-sm mb-1">Contact: {{ org.contact_person }}</p>
+            {% endif %}
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ org.email }}&su=Funding%20Request%20-%20IdeaGuard%20Risk%20Assessment%20Project&body=Dear%20{{ org.name }}%20Team%2C%0A%0AI%20hope%20this%20email%20finds%20you%20well.%20I%20am%20reaching%20out%20regarding%20a%20funding%20opportunity%20for%20my%20startup%20project.%0A%0AI%20have%20recently%20conducted%20a%20comprehensive%20risk%20assessment%20using%20IdeaGuard%2C%20a%20smart%20risk%20assessment%20solution%20for%20first-time%20entrepreneurs.%20My%20project%20received%20a%20risk%20score%20of%20%5BINSERT%20YOUR%20RISK%20SCORE%20HERE%5D%25%20on%20their%20platform%2C%20which%20indicates%20%5BLOW%2FMEDIUM%2FHIGH%5D%20risk%20level.%0A%0AProject%20Details%3A%0A-%20Project%20Name%3A%20%5BINSERT%20PROJECT%20NAME%5D%0A-%20Industry%3A%20%5BINSERT%20INDUSTRY%5D%0A-%20Budget%20Required%3A%20%5BINSERT%20BUDGET%5D%0A-%20Expected%20Timeline%3A%20%5BINSERT%20TIMELINE%5D%0A%0ABased%20on%20the%20risk%20assessment%20results%20and%20our%20business%20plan%2C%20I%20believe%20this%20project%20has%20strong%20potential%20for%20success.%20We%20are%20seeking%20financial%20support%20or%20investment%20to%20help%20us%20bring%20this%20idea%20to%20market.%0A%0AI%20would%20appreciate%20the%20opportunity%20to%20discuss%20this%20further%20and%20explore%20potential%20partnership%20opportunities.%0A%0AThank%20you%20for%20your%20consideration.%0A%0ABest%20regards%2C%0A%5BYour%20Name%5D%0A%5BYour%20Contact%20Information%5D" target="_blank" class="btn-secondary mt-4 inline-flex items-center text-sm px-4 py-2">
+                <svg class="icon w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                Contact
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center text-gray-600 py-8">
+        <p class="text-xl mb-4">No organizations have been registered yet.</p>
+        <p>Be the first to <a href="{{ url_for('register') }}" class="font-medium text-red-600 hover:text-red-700">register your organization</a>!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

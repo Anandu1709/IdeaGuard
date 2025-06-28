@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white p-10 rounded-lg shadow-lg text-center">
+    <h2 class="text-3xl font-bold text-gray-900 mb-8">AI Advisory Services</h2>
+    <p class="text-gray-600 mb-10">
+        Connect with our AI advisor for real-time guidance and insights on your project's risks and opportunities.
+    </p>
+
+    <div class="bg-gray-100 p-6 rounded-lg mb-8 h-96 overflow-y-auto flex flex-col-reverse border border-gray-200 relative" id="chat-window">
+        <!-- Chat messages will appear here -->
+        <div class="text-gray-500 text-sm text-center py-4">
+            <p>Welcome to the AI Advisor chat. How can I assist you today?</p>
+        </div>
+        <div id="typing-indicator" class="absolute bottom-2 left-1/2 -translate-x-1/2 bg-gray-200 text-gray-700 text-sm px-3 py-1 rounded-full hidden">
+            AI is typing...
+        </div>
+    </div>
+
+    <div class="mb-6 text-left">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">Suggested Questions:</h3>
+        <div id="suggested-questions" class="flex flex-wrap gap-2">
+            <button class="suggested-question-btn btn-secondary text-sm px-4 py-2">What are common risks for startups?</button>
+            <button class="suggested-question-btn btn-secondary text-sm px-4 py-2">How can I improve my project's financial outlook?</button>
+            <button class="suggested-question-btn btn-secondary text-sm px-4 py-2">Tell me about market entry strategies.</button>
+            
+            {% if latest_assessment %}
+                <button class="suggested-question-btn btn-secondary text-sm px-4 py-2">
+                    What are the main risks for my project "{{ latest_assessment.project_name }}"?
+                </button>
+                <button class="suggested-question-btn btn-secondary text-sm px-4 py-2">
+                    Given my project's {{ latest_assessment.technical_complexity }}/10 technical complexity, what should I focus on?
+                </button>
+                <button class="suggested-question-btn btn-secondary text-sm px-4 py-2">
+                    How can I mitigate the {{ latest_assessment.risk_level }} risk level of my project?
+                </button>
+                {% if latest_assessment.budget %}
+                <button class="suggested-question-btn btn-secondary text-sm px-4 py-2">
+                    What financial strategies are best for a project with a budget of {{ latest_assessment.budget | format_currency_inr }}?
+                </button>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="flex space-x-4">
+        <input type="text" id="chat-input" placeholder="Type your message..."
+               class="input-field">
+        <button id="send-chat-btn"
+                class="btn-primary px-6 py-2 inline-flex items-center">
+            <svg class="icon w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <path d="M22 2L15 22 11 13 2 9 22 2z"/>
+            </svg>
+            <span>Send</span>
+        </button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatInput = document.getElementById('chat-input');
+        const sendChatBtn = document.getElementById('send-chat-btn');
+        const chatWindow = document.getElementById('chat-window');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const suggestedQuestionsContainer = document.getElementById('suggested-questions');
+
+        let chatHistory = []; // Stores messages for context: [{role: 'user', text: '...'}, {role: 'model', text: '...'}]
+        const userDetails = {{ user_details | safe }}; // User details from Flask
+
+        let initialContextSent = false;
+
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            appendMessage('You', message, 'user');
+            chatHistory.push({ role: 'user', text: message });
+            chatInput.value = '';
+            sendChatBtn.disabled = true;
+            typingIndicator.classList.remove('hidden'); // Show typing indicator
+
+            try {
+                const payload = {
+                    message: message,
+                    history: chatHistory
+                };
+
+                // Send user context only with the first actual message
+                if (!initialContextSent) {
+                    payload.user_context = userDetails;
+                    initialContextSent = true;
+                }
+
+                const response = await fetch('/api/chat-advisor', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    const aiResponse = result.response;
+                    appendMessage('AI Advisor', aiResponse, 'ai');
+                    chatHistory.push({ role: 'model', text: aiResponse });
+                } else {
+                    appendMessage('AI Advisor', 'Error: ' + (result.error || 'Could not get a response.'), 'ai-error');
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                appendMessage('AI Advisor', 'Network error or server issue. Please try again.', 'ai-error');
+            } finally {
+                sendChatBtn.disabled = false;
+                typingIndicator.classList.add('hidden'); // Hide typing indicator
+                chatWindow.scrollTop = chatWindow.scrollHeight; // Scroll to bottom
+            }
+        }
+
+        sendChatBtn.addEventListener('click', sendMessage);
+
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Event listener for suggested questions
+        suggestedQuestionsContainer.addEventListener('click', function(event) {
+            if (event.target.classList.contains('suggested-question-btn')) {
+                chatInput.value = event.target.textContent.trim();
+                sendMessage();
+            }
+        });
+
+        function appendMessage(sender, text, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('mb-3', 'p-3', 'rounded-lg', 'max-w-[80%]');
+
+            if (type === 'user') {
+                messageDiv.classList.add('bg-red-600', 'text-white', 'ml-auto', 'text-right');
+            } else if (type === 'ai') {
+                messageDiv.classList.add('bg-gray-200', 'text-gray-800', 'mr-auto', 'text-left');
+            } else if (type === 'ai-error') {
+                messageDiv.classList.add('bg-red-100', 'text-red-700', 'border', 'border-red-400', 'mr-auto', 'text-left');
+            }
+            
+            messageDiv.style.whiteSpace = 'pre-wrap'; 
+            messageDiv.innerHTML = `<strong class="font-semibold">${sender}:</strong> ${text}`;
+            
+            chatWindow.insertBefore(messageDiv, chatWindow.firstChild); 
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    });
+</script>
+{% endblock %}

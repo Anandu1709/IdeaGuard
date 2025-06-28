@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SmartRisk AI{% endblock %}</title> {# Changed project name #}
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb; /* gray-50 */
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem; /* Increased padding for soft margins */
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem; /* Slightly more rounded */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Softer shadow */
+            border: 1px solid #e2e8f0; /* slate-200 */
+            padding: 2rem; /* Increased padding inside cards */
+        }
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .card-title {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 600; /* font-semibold */
+            color: #1a202c; /* gray-900 */
+        }
+        .card-description {
+            font-size: 0.875rem; /* text-sm */
+            color: #4a5568; /* gray-600 */
+        }
+        .card-content {
+            padding: 1.5rem;
+        }
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem; /* Larger padding */
+            border-radius: 0.5rem; /* More rounded */
+            font-weight: 600; /* Bolder */
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            background-color: #dc2626; /* red-600 */
+            color: #ffffff;
+            border: 1px solid transparent;
+        }
+        .btn-primary:hover {
+            background-color: #b91c1c; /* red-700 */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            background-color: #e2e8f0; /* slate-200 */
+            color: #1a202c; /* gray-900 */
+            border: 1px solid transparent;
+        }
+        .btn-secondary:hover {
+            background-color: #cbd5e1; /* slate-300 */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        .input-field {
+            display: flex;
+            width: 100%;
+            padding: 0.75rem 1rem; /* Larger padding */
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 0.5rem; /* More rounded */
+            border: 1px solid #cbd5e1; /* gray-300 */
+            background-color: #ffffff;
+            color: #1a202c;
+            transition: all 0.2s ease-in-out;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #dc2626; /* red-600 */
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2); /* Red focus ring */
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.85rem; /* Slightly larger */
+            border-radius: 9999px; /* full rounded */
+            font-size: 0.875rem; /* text-sm */
+            font-weight: 500;
+        }
+        .badge.text-green-600 { color: #22c55e; background-color: #f0fdf4; }
+        .badge.text-yellow-600 { color: #eab308; background-color: #fffbeb; }
+        .badge.text-red-600 { color: #ef4444; background-color: #fef2f2; }
+
+        .progress {
+            height: 0.6rem; /* Slightly thicker */
+            width: 100%;
+            background-color: #e2e8f0; /* slate-200 */
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        .progress-indicator {
+            height: 100%;
+            background-color: #dc2626; /* red-600 */
+            border-radius: 9999px;
+            transition: width 0.3s ease-in-out;
+        }
+
+        .tabs-list {
+            display: grid;
+            grid-auto-flow: column;
+            gap: 0.75rem; /* Increased gap */
+            background-color: #f8fafc; /* slate-50 */
+            border-radius: 0.75rem;
+            padding: 0.35rem;
+            border: 1px solid #e2e8f0;
+        }
+        .tabs-trigger {
+            flex: 1;
+            padding: 0.85rem 1.25rem; /* Larger padding */
+            border-radius: 0.5rem;
+            font-weight: 500;
+            color: #4a5568; /* gray-600 */
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            background-color: transparent;
+            border: none;
+        }
+        .tabs-trigger[data-state="active"] {
+            background-color: #ffffff;
+            color: #1a202c; /* gray-900 */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); /* Softer shadow */
+        }
+        .tabs-trigger:hover:not([data-state="active"]) {
+            background-color: #f0f4f8; /* slate-100 */
+        }
+
+        /* Custom styles for the gradient button (adjusted for red/orange) */
+        .gradient-button {
+            background-image: linear-gradient(to right, #ef4444, #f97316); /* red-500 to orange-500 */
+            color: white;
+            padding: 0.85rem 1.75rem; /* Larger padding */
+            border-radius: 0.6rem; /* More rounded */
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* More prominent shadow */
+        }
+
+        .gradient-button:hover {
+            background-image: linear-gradient(to right, #dc2626, #ea580c); /* Darker shades on hover */
+            box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px); /* More pronounced lift */
+        }
+
+        /* Dropdown styles */
+        .dropdown-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            right: 0; /* Align to the right */
+            border-radius: 0.5rem; /* More rounded */
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .dropdown-content a {
+            color: #1a202c; /* gray-900 */
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.875rem;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f0f4f8; /* slate-100 */
+        }
+
+        .group:hover .dropdown-content { /* Use group-hover for visibility */
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <header class="bg-white shadow-sm py-4">
+        <div class="container flex justify-between items-center">
+            <a href="{{ url_for('index') }}" class="text-2xl font-bold text-gray-900">IdeaGuard</a>
+            <nav class="flex items-center space-x-6"> {# Increased space-x #}
+                <a href="{{ url_for('assessment') }}" class="text-gray-600 hover:text-gray-900 font-medium">Assessment</a>
+                <a href="{{ url_for('compare') }}" class="text-gray-600 hover:text-gray-900 font-medium">Compare</a>
+                <a href="{{ url_for('results') }}" class="text-gray-600 hover:text-gray-900 font-medium">Results</a> {# Added Results link #}
+                <a href="{{ url_for('advisor') }}" class="text-gray-600 hover:text-gray-900 font-medium">Advisor</a>
+                {% if user %}
+                    <a href="{{ url_for('organizations_list') }}" class="text-gray-600 hover:text-gray-900 font-medium">Organizations</a>
+                    <a href="{{ url_for('logout') }}" class="btn-secondary ml-2">Logout</a>
+                    <div class="relative group">
+                        <button class="flex items-center space-x-2 text-gray-600 hover:text-gray-900 focus:outline-none">
+                            <span class="font-medium">{{ user.first_name }} {{ user.last_name }}</span>
+                            <svg class="icon w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                        </button>
+                        <div class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+                            <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn-secondary">Login</a>
+                    <a href="{{ url_for('register') }}" class="btn-primary">Sign Up</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow container py-10"> {# Increased vertical padding #}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-gray-800 text-white py-6 mt-auto">
+        <div class="container text-center text-gray-400">
+            &copy; {{ current_year }} IdeaGuard. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        // Get current year for footer
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentYear = new Date().getFullYear();
+            document.querySelector('footer .text-gray-400').innerHTML = `&copy; ${currentYear} IdeaGuard. All rights reserved.`;
+        });
+        lucide.createIcons();
+    </script>
+</body>
+</html>

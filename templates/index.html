@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center py-20 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-xl shadow-xl mb-12"> {# Increased padding, rounded-xl, shadow-xl, red/orange gradient #}
+    <h1 class="text-5xl font-extrabold mb-5">IdeaGuard: Smart Risk Assessment Solution for First-Time Entrepreneurs</h1> {# Changed project name #}
+    <p class="text-xl mb-10 max-w-3xl mx-auto"> {# Increased margin, max-w #}
+        Leverage AI-powered insights to understand, quantify, and mitigate risks for your startup or project. Perfect for first-time entrepreneurs.
+    </p>
+    <a href="{{ url_for('assessment') }}" class="btn-primary text-lg px-10 py-4 inline-flex items-center space-x-3 gradient-button"> {# Larger button, gradient-button #}
+        <svg class="icon w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2 2 0 0 1-2.83-2.83l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77Z"/>
+            <path d="m18 12-6-6"/>
+        </svg>
+        <span>Start Assessment</span>
+    </a>
+</div>
+
+<section class="py-12">
+    <h2 class="text-4xl font-bold text-center text-gray-900 mb-12">Key Features</h2> {# Increased margin #}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"> {# Increased gap #}
+        {% for feature in features %}
+        <div class="card text-center"> {# Using custom card class #}
+            <div class="flex justify-center mb-5"> {# Increased margin #}
+                {% if feature.icon == 'shield' %}
+                <svg class="icon w-14 h-14 text-red-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                {% elif feature.icon == 'bar-chart' %}
+                <svg class="icon w-14 h-14 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="20" x2="12" y2="10"/>
+                    <line x1="18" y1="20" x2="18" y2="4"/>
+                    <line x1="6" y1="20" x2="6" y2="16"/>
+                </svg>
+                {% elif feature.icon == 'file-text' %}
+                <svg class="icon w-14 h-14 text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <line x1="10" y1="9" x2="8" y2="9"/>
+                </svg>
+                {% elif feature.icon == 'users' %}
+                <svg class="icon w-14 h-14 text-gray-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                {% endif %}
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ feature.title }}</h3>
+            <p class="text-gray-600 mb-5">{{ feature.description }}</p>
+            <a href="{{ feature.href }}" class="text-red-600 hover:text-red-700 font-medium">Learn More &rarr;</a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="py-12 bg-gray-100 rounded-xl shadow-inner">
+    <h2 class="text-4xl font-bold text-center text-gray-900 mb-12">Our Impact</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+        <div class="p-4">
+            <p class="text-5xl font-bold text-red-600 mb-2">{{ stats.total_assessments }}+</p>
+            <p class="text-lg text-gray-700">Assessments Completed</p>
+        </div>
+        <div class="p-4">
+            <p class="text-5xl font-bold text-yellow-600 mb-2">{{ stats.medium_risk_items }}</p>
+            <p class="text-lg text-gray-700">Medium Risk Identified</p>
+        </div>
+        <div class="p-4">
+            <p class="text-5xl font-bold text-green-600 mb-2">{{ stats.low_risk_items }}</p>
+            <p class="text-lg text-gray-700">Low Risk Projects</p>
+        </div>
+    </div>
+</section>
+{% endblock %}
