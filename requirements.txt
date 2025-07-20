@@ -4,3 +4,7 @@ reportlab==4.0.0
 PyMuPDF==1.23.8
 google-generativeai
 werkzeug==2.3.7
+gunicorn
+opencv-python
+numpy
+scikit-image
